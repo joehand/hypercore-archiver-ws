@@ -7,21 +7,19 @@ module.exports = archiverWs
 
 function archiverWs (archiver, opts) {
   assert.ok(archiver, 'hypercore-archiver-ws: archiver required')
+  if (!opts) opts = {}
 
-  var port = opts.port || 8080
   var server = opts.server || http.createServer()
-
   wss.createServer({server: server}, onwebsocket)
-  server.on('request', function (req, res) {
-    res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({
-      name: 'hypercore-archiver',
-      version: require('./package').version
-    }))
-  })
-  server.listen(port, function () {
-    console.log(`listening on port ${port}`)
-  })
+  if (!opts.server) {
+    server.on('request', function (req, res) {
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({
+        name: 'hypercore-archiver',
+        version: require('./package').version
+      }))
+    })
+  }
 
   return server
 
